@@ -1,0 +1,18 @@
+---
+
+# Provision virtual machine example
+
+- hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    azure_prefix: d115
+
+  vars_files:
+    - secrets.yml
+
+  tasks:
+
+    - command: azure group delete -q {{ azure_prefix}}-group
+

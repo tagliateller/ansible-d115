@@ -1,0 +1,22 @@
+---
+
+# Provision virtual machine example
+#
+
+- hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    bo_filename: example-api-user-keys.log
+    bo_keyname: workathome4
+    bo_username: rbloy
+
+  tasks:
+
+    - name: Ermittlung der ID des Keys
+      command: python /home/robert/workspace/ansible-taskjuggler/gitlab-api-get-ssh-key-id.py {{ bo_filename }} {{ bo_keyname }}
+      register: bo_keyid
+      failed_when: bo_keyid.stderr == "0"
+
+    - debug: msg="ID ist {{ bo_keyid.stderr }}"

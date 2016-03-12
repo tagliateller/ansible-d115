@@ -1,0 +1,60 @@
+---
+
+- hosts: localhost
+  connection: local
+  gather_facts: false
+  sudo: true
+
+  vars:
+    deployer_user: workathomeuser
+    deployer_user_ssh_key_file: .ssh/id_rsa
+#    bo_gitlab_api: https://gitlab.berlinonline.net/api/v3/
+    bo_gitlab_api: https://localhost:8443/api/v3/
+    bo_gitlab_key_title: automationathome
+
+  vars_files:
+    - secrets.yml
+
+  tasks: 
+
+#    - name: install git
+#      yum: name=git state=latest
+
+#    - name: install httplib2 (für gitlab notwendig)
+#      yum: name=python-httplib2 state=latest
+
+#    - name: install httplib2 (für uri, Zugriff auf gitlab)
+#      pip: name=httplib2
+
+    # deploy-user immer löschen, dann neu 
+#    - name: erzeuge ssh-key
+#      user: name={{ deployer_user }} generate_ssh_key=yes 
+
+#    - name: Assign ssh key to a variable
+#      shell: cat /home/{{ deployer_user }}/{{ deployer_user_ssh_key_file }}.pub
+#      register: deployer_user_public_key
+
+    # ist noch nicht idempotent, sollte abfragen, ob der Key so noch/schon existiert und diesen updaten/löschen und neu anlegen
+    # ggf. auch so: key immer löschen, immer neuanlegen ??
+    - name: Delete older keys from the Gitlab instance
+      uri: >
+        url="{{ bo_gitlab_api }}user/keys"
+        method=DELETE
+        status_code=201
+        HEADER_PRIVATE-TOKEN="{{ bo_gitlab_token }}"
+        HEADER_Content-Type="application/json"
+        body="{\"title\": \"{{ bo_gitlab_key_title }}\"}"
+
+    # ist noch nicht idempotent, sollte abfragen, ob der Key so noch/schon existiert und diesen updaten/löschen und neu anlegen
+    # ggf. auch so: key immer löschen, immer neuanlegen ??
+#    - name: Push the generated ssh key to the Gitlab instance
+#      uri: >
+#        url="{{ bo_gitlab_api }}user/keys"
+#        method=POST
+#        status_code=201
+#        HEADER_PRIVATE-TOKEN="{{ bo_gitlab_token }}"
+#        HEADER_Content-Type="application/json"
+#        body="{\"title\": \"{{ bo_gitlab_key_title }}\", \"key\": \"{{ deployer_user_public_key.stdout_lines.0 }}\"}"
+
+#    - name: git clone d115
+       
